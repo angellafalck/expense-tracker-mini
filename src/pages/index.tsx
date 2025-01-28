@@ -1,25 +1,50 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
-import { getCategory } from "../../api";
+"use client";
 
+import { useEffect, useState } from "react";
+import { getCategory } from "../api";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+export default function Home() {
+  const [categories, setCategories] = useState([]);
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategory();
+        setCategories(data);
+      } catch (err: any) {
+        console.log(err);
+      }
+    };
 
-export default async function Home() {
-  const categories = await getCategory();
+    fetchCategories();
+  }, []);
 
-  console.log(categories);
   return (
-    <div className="text-red-800">
-      Hola
+    <div className=" bg-yellow-50 p-10">
+      <h1 className="bg-lime-300 font-bold text-center p-1 rounded text-lg">
+        Expense Tracker
+      </h1>
+      <div className="text-sm font-light flex flex-col justify-center items-center">
+        <div className="flex flex-col justify-center items-center py-2">
+        Your Balance:
+        <span className="font-bold text-xl">$1000</span>
+        </div>
+        <div className="flex space-x-4 justify-center">
+        <span className="rounded bg-green-300 p-2">Income: $1000</span>
+        <span className="rounded bg-red-300 p-2">Expense: $1000</span>
+        </div>
+      </div>
+      <div>
+        History
+      </div>
+      <h1>Hola</h1>
+      <ul>
+        {categories.map((category: any) => (
+          <li key={category.id}>
+            {category.name} - ${category.budget}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
