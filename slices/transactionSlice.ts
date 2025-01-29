@@ -9,10 +9,17 @@ interface Transaction {
   date: string;
 }
 
+interface Category {
+    id: number;
+    name: string;
+    budget: number;
+ }  
+
 interface TransactionsState {
-  categories: string[];
+  categories: Category[];
   expenses: Transaction[];
   incomes: Transaction[];
+  history: Transaction[];
   balance: number;
 }
 
@@ -20,6 +27,7 @@ const initialState: TransactionsState = {
   categories: [],
   expenses: [],
   incomes: [],
+  history: [],
   balance: 0,
 };
 
@@ -47,7 +55,7 @@ const transactionsSlice = createSlice({
         state.balance -= parseFloat(action.payload.amount);
       }
     },
-    setCategories: (state, action: PayloadAction<string[]>) => {
+    setCategories: (state, action: PayloadAction<Category[]>) => {
       state.categories = action.payload;
     },
     updateBalance: (state) => {
@@ -60,10 +68,14 @@ const transactionsSlice = createSlice({
     builder.addCase(fetchTransactions.fulfilled, (state, action) => {
       state.expenses = action.payload.filter((t: Transaction) => t.type === "expense");
       state.incomes = action.payload.filter((t: Transaction) => t.type === "income");
+      state.history = action.payload;
 
       state.balance =
         state.incomes.reduce((sum, t) => sum + parseFloat(t.amount), 0) -
         state.expenses.reduce((sum, t) => sum + parseFloat(t.amount), 0);
+    })
+    .addCase(fetchCategories.fulfilled, (state, action) => {
+        state.categories = action.payload;
     });
   },
 });
@@ -71,6 +83,7 @@ const transactionsSlice = createSlice({
 export const { addTransaction, setCategories, updateBalance } = transactionsSlice.actions;
 
 export const selectCategories = (state: RootState) => state.transactions.categories;
+export const selectHistory = (state: RootState) => state.transactions.history;
 export const selectExpenses = (state: RootState) => state.transactions.expenses;
 export const selectIncomes = (state: RootState) => state.transactions.incomes;
 export const selectBalance = (state: RootState) => state.transactions.balance;
