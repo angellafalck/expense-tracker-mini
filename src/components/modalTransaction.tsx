@@ -6,17 +6,19 @@ import {
 } from "@headlessui/react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchTransactions, selectCategories, setTransactions, Transaction } from "../../slices/transactionSlice";
+import {
+  selectCategories,
+  setTransactions,
+  Transaction,
+} from "../../slices/transactionSlice";
 import { AppDispatch } from "../../store";
 
 const ModalTransaction = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
 
-  // State from Redux
   const categories = useSelector(selectCategories);
 
-  // Local state only for handling form inputs before dispatching to Redux
   const [type, setType] = useState<"expense" | "income">("expense");
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
@@ -26,22 +28,18 @@ const ModalTransaction = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Build transaction object
     const body: Transaction = {
       type,
       title,
       amount,
       date,
-      ...(type === "expense" && { category_id: category }), // Add category_id only if expense
+      ...(type === "expense" && { category_id: category }),
     };
 
-    // Dispatch action to Redux
     await dispatch(setTransactions(body));
 
-    // Close modal
     setIsOpen(false);
 
-    // Reset form fields
     setTitle("");
     setAmount("");
     setCategory(undefined);
@@ -64,17 +62,23 @@ const ModalTransaction = () => {
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm text-black"
       >
         <DialogPanel className="max-w-lg w-full rounded-lg bg-white p-6 shadow-lg">
-          <DialogTitle className="text-lg font-bold">Add Transaction</DialogTitle>
+          <DialogTitle className="text-lg font-bold">
+            Add Transaction
+          </DialogTitle>
           <Description className="text-gray-500">
             Fill in the details of your transaction below.
           </Description>
 
           <form onSubmit={handleSubmit} className="mt-4 space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Transaction Type</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Transaction Type
+              </label>
               <select
                 value={type}
-                onChange={(e) => setType(e.target.value as "expense" | "income")}
+                onChange={(e) =>
+                  setType(e.target.value as "expense" | "income")
+                }
                 className="w-full mt-1 p-2 border rounded focus:outline-blue-500"
                 required
               >
@@ -84,7 +88,9 @@ const ModalTransaction = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Transaction Title</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Transaction Title
+              </label>
               <input
                 type="text"
                 placeholder="Enter transaction title"
@@ -96,12 +102,14 @@ const ModalTransaction = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Amount ($)</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Amount ($)
+              </label>
               <input
-                type='number'
+                type="number"
                 placeholder="Enter amount"
                 value={amount}
-                step='0.01'
+                step="0.01"
                 onChange={(e) => setAmount(e.target.value)}
                 min="0"
                 className="w-full mt-1 p-2 border rounded focus:outline-blue-500"
@@ -109,17 +117,20 @@ const ModalTransaction = () => {
               />
             </div>
 
-            {/* Show Category Selector only for Expense */}
             {type === "expense" && (
               <div>
-                <label className="block text-sm font-medium text-gray-700">Category</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Category
+                </label>
                 <select
                   value={category || ""}
                   onChange={(e) => setCategory(parseInt(e.target.value))}
                   className="w-full mt-1 p-2 border rounded focus:outline-blue-500"
                   required
                 >
-                  <option value="" disabled hidden>Select a Category</option>
+                  <option value="" disabled hidden>
+                    Select a Category
+                  </option>
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
                       {cat.name}
@@ -130,7 +141,9 @@ const ModalTransaction = () => {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Date</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Date
+              </label>
               <input
                 type="date"
                 value={date}
