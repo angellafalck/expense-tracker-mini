@@ -13,3 +13,54 @@ export async function GET() {
     return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
+
+// export async function POST(req: Request) {
+//   try {
+//     const db = await createConnection();
+//     const { title, amount, category_id, type, date } = await req.json();
+
+//     if (!title || !amount || !type || !date) {
+//       return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
+//     }
+
+//     const sql = `INSERT INTO transactions (title, amount, category_id, type, date) VALUES (?, ?, ?, ?, ?)`;
+//     const values = [title, amount, category_id, type, date];
+
+//     await db.query(sql, values);
+
+//     return NextResponse.json({ message: "Transaction added successfully" }, { status: 201 });
+//   } catch (error: any) {
+//     console.error("Error adding transaction:", error.message);
+//     return NextResponse.json({ message: error.message }, { status: 500 });
+//   }
+// }
+
+export async function POST(req: Request) {
+  try {
+    const db = await createConnection();
+    const { title, amount, category_id, type, date } = await req.json();
+
+    if (!title || !amount || !type || !date) {
+      return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
+    }
+
+    const sql = `INSERT INTO transactions (title, amount, category_id, type, date) VALUES (?, ?, ?, ?, ?)`;
+    const values = [title, amount, category_id, type, date];
+
+    const [result] = await db.query(sql, values);
+
+    // ✅ Return the inserted transaction for immediate UI update
+    return NextResponse.json({
+      id: result.insertId, // Ensure to return the ID
+      title,
+      amount,
+      category_id,
+      type,
+      date
+    }, { status: 201 });
+
+  } catch (error: any) {
+    console.error("Error adding transaction:", error.message);
+    return NextResponse.json({ message: error.message }, { status: 500 });
+  }
+}
