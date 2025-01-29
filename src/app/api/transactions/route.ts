@@ -4,12 +4,12 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const db = await createConnection();
-    const sql ="SELECT * FROM expenses";
+    const sql ="SELECT * FROM transactions";
     const [posts] = await db.query(sql);
 
     return NextResponse.json(posts);
   } catch (error: any) {
-    console.error("Error fetching expenses:", error.message);
+    console.error("Error fetching transactions:", error.message);
     return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
