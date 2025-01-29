@@ -12,7 +12,7 @@ export interface Transaction {
 }
 
 export interface Category {
-    id: number;
+    id?: number;
     name: string;
     budget: number;
  }  
@@ -95,7 +95,8 @@ const transactionsSlice = createSlice({
       state.history.push(transaction);
     })
     .addCase(setCategories.fulfilled, (state, action) => {
-      state.categories = action.payload;
+      const category = action.payload;
+      state.categories.push(category);
     });
   },
 });

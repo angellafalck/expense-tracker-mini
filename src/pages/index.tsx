@@ -15,9 +15,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../store";
 import ModalTransaction from "../components/modalTransaction";
 import { getCategories, getTransactions } from "@/api";
+import ModalCategory from "@/components/modalCategory";
 
 interface Category {
-  id: number;
+  id?: number;
   name: string;
   budget: number;
 }
@@ -33,7 +34,7 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchMyAPI() {
-      let response = await getTransactions();
+      let response = await getCategories();
       console.log(response);
     }
     fetchMyAPI();
@@ -49,6 +50,8 @@ export default function Home() {
       day: "numeric",
     });
   };
+
+  console.log("categories", categories);
 
   return (
     <div className="bg-yellow-50 p-10 min-h-screen text-black">
@@ -86,6 +89,9 @@ export default function Home() {
           <ModalTransaction />
         </div>
         <div>
+          <ModalCategory />
+        </div>
+        <div>
           <h1 className="bg-amber-300 font-bold text-center p-1 rounded text-lg mt-2 lg:text-2xl">
             History
           </h1>
@@ -103,14 +109,16 @@ export default function Home() {
                 >
                   <span className="w-full">{formatDate(transaction.date)}</span>
                   <span className="w-full">{transaction.title}</span>
-                  <span className="w-full">
-                    {!transaction.category_id
-                      ? "Income"
-                      : categories.find(
-                          (category: Category) =>
-                            category.id === transaction.category_id
-                        )?.name}
-                  </span>
+                  {categories && (
+                    <span className="w-full">
+                      {!transaction.category_id
+                        ? "Income"
+                        : categories.find(
+                            (category: Category) =>
+                              category.id === transaction.category_id
+                          )?.name}
+                    </span>
+                  )}
                   <span
                     className={`w-full ${
                       transaction.type === "expense"
