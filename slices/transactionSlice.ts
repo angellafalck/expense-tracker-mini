@@ -84,8 +84,6 @@ const transactionsSlice = createSlice({
         state.categories = action.payload;
     })
     .addCase(setTransactions.fulfilled, (state, action:PayloadAction<Transaction>) => {
-     
-      
       const transaction = action.payload;
       if (action.payload.type === "income") {
         state.incomes.push(action.payload);
@@ -95,6 +93,9 @@ const transactionsSlice = createSlice({
         state.balance -= parseFloat(action.payload.amount);
       }
       state.history.push(transaction);
+    })
+    .addCase(setCategories.fulfilled, (state, action) => {
+      state.categories = action.payload;
     });
   },
 });
