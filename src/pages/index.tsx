@@ -5,8 +5,6 @@ import {
   fetchCategories,
   fetchTransactions,
   selectCategories,
-  selectExpenses,
-  selectIncomes,
   selectBalance,
   selectHistory,
   Transaction,
@@ -14,7 +12,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../store";
 import ModalTransaction from "../components/modalTransaction";
-import { getCategories, getTransactions } from "@/api";
+import { getCategories } from "@/api";
 import ModalCategory from "@/components/modalCategory";
 
 interface Category {
@@ -27,14 +25,12 @@ export default function Home() {
   const dispatch = useDispatch<AppDispatch>();
 
   const categories = useSelector(selectCategories);
-  const expenses = useSelector(selectExpenses);
-  const incomes = useSelector(selectIncomes);
   const balance = useSelector(selectBalance);
   const history = useSelector(selectHistory);
 
   useEffect(() => {
     async function fetchMyAPI() {
-      let response = await getCategories();
+      const response = await getCategories();
       console.log(response);
     }
     fetchMyAPI();
@@ -51,51 +47,35 @@ export default function Home() {
     });
   };
 
-  console.log("categories", categories);
-
   return (
     <div className="bg-yellow-50 p-10 min-h-screen text-black">
-      <div className="max-w-full sm:max-w-[30rem] lg:max-w-[50rem] mx-auto">
-        <h1 className="bg-lime-300 font-bold text-center p-1 rounded text-lg lg:text-2xl">
-          Expense Tracker
-        </h1>
-        <div className="text-sm font-light flex flex-col justify-center items-center">
-          <div className="flex flex-col justify-center items-center py-4 lg:text-2xl">
-            Balance:
-            <span className="font-bold text-xl lg:text-4xl">
-              ${balance.toFixed(2)}
-            </span>
+      <div className="max-w-full sm:max-w-[40rem] lg:max-w-full mx-auto flex flex-col md:flex-row gap-10 justify-center">
+        <div>
+          <h1 className="bg-lime-300 font-bold text-center p-1 rounded text-lg lg:text-2xl">
+            Expense Tracker
+          </h1>
+          <div className="text-sm font-light flex flex-col justify-center items-center">
+            <div className="flex flex-col justify-center items-center py-4 lg:text-2xl">
+              Balance:
+              <span className="font-bold text-xl lg:text-4xl">
+                ${balance.toFixed(2)}
+              </span>
+            </div>
           </div>
-          <div className="flex space-x-4 justify-center">
-            {incomes && (
-              <span className="rounded bg-green-300 p-2 lg:text-xl">
-                Incomes:
-                {incomes.map((income: any) => (
-                  <li key={income.id}>${income.amount}</li>
-                ))}
-              </span>
-            )}
-            {expenses && (
-              <span className="rounded bg-red-300 p-2 lg:text-xl">
-                Expenses:
-                {expenses.map((expense: any) => (
-                  <li key={expense.id}>${expense.amount}</li>
-                ))}
-              </span>
-            )}
+          <div className="flex space-x-4 items-center justify-center mt-2">
+            <div>
+              <ModalTransaction />
+            </div>
+            <div>
+              <ModalCategory />
+            </div>
           </div>
         </div>
         <div>
-          <ModalTransaction />
-        </div>
-        <div>
-          <ModalCategory />
-        </div>
-        <div>
-          <h1 className="bg-amber-300 font-bold text-center p-1 rounded text-lg mt-2 lg:text-2xl">
+          <h1 className="bg-amber-300 font-bold text-center p-1 rounded text-lg lg:text-2xl">
             History
           </h1>
-          <div className="flex flex-col space-y-2 mt-2">
+          <div className="flex flex-col space-y-2 mt-2 max-h-[30rem] overflow-scroll h-full">
             {history
               .slice()
               .sort(

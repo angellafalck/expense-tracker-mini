@@ -1,7 +1,6 @@
-import { error, log } from 'console';
-import mysql from 'mysql2/promise';
+import mysql, { Connection } from "mysql2/promise";
 
-let connection: any;
+let connection: Connection;
 const createConnection = async() =>{
     if(!connection){
         connection = await mysql.createConnection({

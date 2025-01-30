@@ -8,9 +8,13 @@ export async function GET() {
     const [posts] = await db.query(sql);
 
     return NextResponse.json(posts);
-  } catch (error: any) {
-    console.error("Error fetching categories:", error.message);
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error fetching categories:", error.message);
+      return NextResponse.json({ message: error.message }, { status: 500 });
+    }else {
+      console.error("Unknown error", error);
+    }
   }
 }
 
@@ -27,16 +31,19 @@ export async function POST(req: Request) {
     const sql = `INSERT INTO categories (name, budget) VALUES (?, ?)`;
     const values = [name, budget];
 
-    const [result] = await db.query(sql, values);
+    await db.query(sql, values);
 
     return NextResponse.json({
-      id: result.insertId,
       name,
       budget,
     }, { status: 201 });
 
-  } catch (error: any) {
-    console.error("Error adding category:", error.message);
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error fetching categories:", error.message);
+      return NextResponse.json({ message: error.message }, { status: 500 });
+    }else {
+      console.error("Unknown error", error);
+    }
   }
 }

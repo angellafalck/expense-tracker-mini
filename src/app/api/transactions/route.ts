@@ -8,9 +8,13 @@ export async function GET() {
     const [posts] = await db.query(sql);
 
     return NextResponse.json(posts);
-  } catch (error: any) {
-    console.error("Error fetching transactions:", error.message);
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error fetching transactions:", error.message);
+      return NextResponse.json({ message: error.message }, { status: 500 });
+    }else {
+      console.error("Unknown error", error);
+    }
   }
 }
 
@@ -26,10 +30,9 @@ export async function POST(req: Request) {
     const sql = `INSERT INTO transactions (title, amount, category_id, type, date) VALUES (?, ?, ?, ?, ?)`;
     const values = [title, amount, category_id, type, date];
 
-    const [result] = await db.query(sql, values);
+    await db.query(sql, values);
 
     return NextResponse.json({
-      id: result.insertId,
       title,
       amount,
       category_id,
@@ -37,8 +40,12 @@ export async function POST(req: Request) {
       date
     }, { status: 201 });
 
-  } catch (error: any) {
-    console.error("Error adding transaction:", error.message);
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error fetching transactions:", error.message);
+      return NextResponse.json({ message: error.message }, { status: 500 });
+    }else {
+      console.error("Unknown error", error);
+    }
   }
 }
