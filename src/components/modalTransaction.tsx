@@ -8,16 +8,20 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectCategories,
+  selectExpenses,
   setTransactions,
   Transaction,
 } from "../../slices/transactionSlice";
 import { AppDispatch } from "../../store";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ModalTransaction = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
 
   const categories = useSelector(selectCategories);
+  const expenses = useSelector(selectExpenses);
 
   const [type, setType] = useState<"expense" | "income">("expense");
   const [title, setTitle] = useState("");
@@ -36,7 +40,29 @@ const ModalTransaction = () => {
       ...(type === "expense" && { category_id: category }),
     };
 
-    await dispatch(setTransactions(body));
+    const result = await dispatch(setTransactions(body));
+
+    if (setTransactions.fulfilled.match(result)) {
+      toast.success("Transaction added successfully! 🎉");
+      if (type === "expense" && category) {
+        const selectedCategory = categories.find((cat) => cat.id === category);
+        if (selectedCategory) {
+          const totalSpent = expenses
+            .filter((exp) => exp.category_id === category)
+            .reduce((sum, exp) => sum + parseFloat(exp.amount), 0);
+
+          const newTotal = totalSpent + parseFloat(amount);
+
+          if (newTotal > selectedCategory.budget) {
+            toast.warn(
+              `⚠️ You are spending too much on ${selectedCategory.name}!`
+            );
+          }
+        }
+      }
+    } else {
+      toast.error("Failed to add transaction.");
+    }
 
     setIsOpen(false);
 

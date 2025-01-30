@@ -5,13 +5,11 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  Category,
-  selectCategories,
-  setCategories,
-} from "../../slices/transactionSlice";
+import { useDispatch } from "react-redux";
+import { Category, setCategories } from "../../slices/transactionSlice";
 import { AppDispatch } from "../../store";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ModalCategory = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,7 +26,13 @@ const ModalCategory = () => {
       budget,
     };
 
-    await dispatch(setCategories(body));
+    const result = await dispatch(setCategories(body));
+
+    if (setCategories.fulfilled.match(result)) {
+      toast.success("Transaction added successfully! 🎉");
+    } else {
+      toast.error("Failed to add transaction.");
+    }
 
     setIsOpen(false);
 
