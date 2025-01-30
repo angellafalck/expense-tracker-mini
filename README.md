@@ -60,5 +60,5 @@ my-app/
 ---
 
 ## 🌍 Live Project URL
-🚀 **Deployed Application:** [Insert Live URL Here]
+🚀 **Deployed Application:** (https://expense-tracker-mini.vercel.app/)
 
